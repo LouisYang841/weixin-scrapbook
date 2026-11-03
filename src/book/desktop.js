@@ -2,6 +2,7 @@
 // Adapted from the public Paper Mono production renderer. Reference: https://paper.design/mono
 import * as i from "three";
 import * as l from "./loader.js";
+import { createSurfaceLighting } from "./surface-lighting";
 import { createMagazinePerformance } from "./performance.js";
 const s = { createMagazinePerformance };
 const o = { monoMagazinePatternSource: "./assets/paper.webp" };
@@ -92,6 +93,7 @@ export const mountDesktop = function (e, t, a = {}) {
     (N.shadow.bias = -0.001),
     z.add(N),
     z.add(N.target));
+  const surfaceLighting = createSurfaceLighting(a.surfaceMaps, R, L, k, N, a.lightAngle);
   let U = new i.PlaneGeometry(6.25, 6.25),
     O = new i.ShadowMaterial({ opacity: (a.shadow ?? 35) / 100 * 0.43 }),
     X = new i.Mesh(U, O);
@@ -783,7 +785,7 @@ export const mountDesktop = function (e, t, a = {}) {
         s = `
         _transformedSheetPosition = _computeSheetPosition(uv, aNoise.x);
     `,
-        c = new i.MeshStandardMaterial({
+        c = new (a.surfaceMaps ? i.MeshPhysicalMaterial : i.MeshStandardMaterial)({
           map: e,
           side: i.DoubleSide,
           metalness: 0.17,
@@ -856,6 +858,7 @@ export const mountDesktop = function (e, t, a = {}) {
           )));
       }),
         a.onSheetMaterial?.(c, n, R.capabilities.isWebGL2));
+      surfaceLighting?.bind(c, n * 2, n * 2 + 1);
       let u = new i.MeshDepthMaterial({
         depthPacking: i.RGBADepthPacking,
         side: i.DoubleSide,
@@ -933,6 +936,7 @@ export const mountDesktop = function (e, t, a = {}) {
       }
       ey(); F = true;
     },
+    setLightAngle(value) { surfaceLighting?.setAngle(value); F = true; },
     setShadow(value) { O.opacity = value / 100 * .43; F = true; },
   });
   let eF = ey();
@@ -1022,7 +1026,7 @@ export const mountDesktop = function (e, t, a = {}) {
           e.mesh.material.dispose(),
           e.mesh.customDepthMaterial.dispose());
       for (let e of y) e?.dispose();
-      (h?.dispose(),
+      (surfaceLighting?.dispose(), h?.dispose(),
         B.dispose(),
         G.dispose(),
         U.dispose(),

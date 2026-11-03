@@ -2,6 +2,7 @@
 // Adapted from the public Paper Mono production renderer. Reference: https://paper.design/mono
 import * as g from "three";
 import * as v from "./loader.js";
+import { createSurfaceLighting } from "./surface-lighting";
 import { createMagazinePerformance } from "./performance.js";
 const S = { createMagazinePerformance };
 const x = {
@@ -122,6 +123,7 @@ export const mountMobile = function (e, t, a = 0, n = {}) {
     (Z.shadow.bias = -0.001),
     V.add(Z),
     V.add(Z.target));
+  const surfaceLighting = createSurfaceLighting(n.surfaceMaps, j, N, K, Z, n.lightAngle);
   let Q = j.capabilities.getMaxAnisotropy(),
     $ = new g.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1);
   $.needsUpdate = !0;
@@ -858,7 +860,7 @@ export const mountMobile = function (e, t, a = 0, n = {}) {
         r = `
         _transformedSheetPosition = _computeSheetPosition(uv);
     `,
-        l = new g.MeshStandardMaterial({
+        l = new (n.surfaceMaps ? g.MeshPhysicalMaterial : g.MeshStandardMaterial)({
           map: e,
           side: g.DoubleSide,
           metalness: 0.17,
@@ -934,6 +936,7 @@ export const mountMobile = function (e, t, a = 0, n = {}) {
             `,
           )));
       };
+      surfaceLighting?.bind(l, a, -1);
       let s = new g.MeshDepthMaterial({
         depthPacking: g.RGBADepthPacking,
         side: g.DoubleSide,
@@ -1005,6 +1008,7 @@ export const mountMobile = function (e, t, a = 0, n = {}) {
       for (const sheet of D) sheet.flipProgress = +(sheet.index < q);
       eX(); U = true;
     },
+    setLightAngle(value) { surfaceLighting?.setAngle(value); U = true; },
     setShadow(value) { folioShadow.value = value / 100; U = true; },
   });
   let eY = eX();
@@ -1087,7 +1091,7 @@ export const mountMobile = function (e, t, a = 0, n = {}) {
           e.mesh.material.dispose(),
           e.mesh.customDepthMaterial.dispose());
       for (let e of k) e?.dispose();
-      (f?.dispose(), $.dispose(), J.dispose(), j.dispose(), W.remove());
+      (surfaceLighting?.dispose(), f?.dispose(), $.dispose(), J.dispose(), j.dispose(), W.remove());
     }
   );
 };

@@ -1,9 +1,12 @@
+import type { SurfaceMap } from './surface-map';
 import { mountDesktop, type BookController } from "./desktop.js";
 import { mountMobile } from "./mobile.js";
 export interface ViewerOptions {
   pages: string[];
   initialPage: number;
   patternSource?: string;
+  surfaceMaps?: SurfaceMap[];
+  lightAngle?: number;
   resolveImage?: (src: string) => Promise<string>;
   shadow?: number;
   onPageChange?: (indices: number[]) => void;
@@ -35,6 +38,8 @@ export function mountViewer(
       initialPage: page,
       layoutFrame: frame,
       patternSource: options.patternSource,
+      surfaceMaps: options.surfaceMaps,
+      lightAngle: options.lightAngle,
       resolveImage: options.resolveImage,
       shadow: options.shadow,
       onOpeningReady: () => {

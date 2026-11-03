@@ -81,8 +81,8 @@ export function createSurfaceLighting(
         `).replace('#include <lights_physical_fragment>',`
           #include <lights_physical_fragment>
           #ifdef USE_CLEARCOAT
-            material.clearcoat = 0.65 * surfacePhoto + 0.12 * surfaceTape;
-            material.clearcoatRoughness = mix(0.16,0.35,surfaceTape);
+            material.clearcoat = 0.65 * surfacePhoto + 0.95 * surfaceTape;
+            material.clearcoatRoughness = mix(0.16,clamp(surfaceData.b * 0.65,0.075,0.15),surfaceTape);
           #endif
         `);
         // The original grain darkening stays confined to the matte page.
@@ -95,7 +95,7 @@ export function createSurfaceLighting(
           'sheetColor.rgb *= mix(vec3(1.0), otherColor.rgb, PAPER_TRANSPARENCY * (1.0-max(surfacePhoto,surfaceTape)));',
         );
       };
-      material.customProgramCacheKey=()=> 'scrapbook-pbr-surface-v1';
+      material.customProgramCacheKey=()=> 'scrapbook-pbr-surface-v2';
       material.needsUpdate=true;
     },
     dispose(){for(const t of textures)t.dispose();blank.dispose();scene.remove(light);light.dispose();},

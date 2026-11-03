@@ -1,3 +1,5 @@
+import { drawMountedPhoto as photo } from './paper-relief';
+
 export const entries = [
   { file:'3706937', title:'先许一个愿', chapter:'01 / 生日来信', note:'把烛光和笑意，一起留在这一页。', color:'#91a7bf', tag:'MAKE A WISH' },
   { file:'3710065', title:'给你一块甜', chapter:'01 / 生日来信', note:'有些祝福，藏在一小块蛋糕里。', color:'#d4a2a0', tag:'A LITTLE SWEETNESS' },
@@ -24,8 +26,6 @@ export async function makePages():Promise<string[]> {
  c.beginPath();c.moveTo(64,105);c.lineTo(936,105);c.stroke();c.font='18px monospace';c.fillText(String(n).padStart(2,'0'),64,1303);c.textAlign='right';c.fillText('把喜欢，贴进纸里',936,1303);c.textAlign='left';return {canvas,c};
  }
  function text(c:CanvasRenderingContext2D,t:string,x:number,y:number,size:number,color='#414b48'){c.fillStyle=color;c.font=`${size}px "Noto Serif CJK SC", "Songti SC", serif`;c.fillText(t,x,y);}
- function tape(c:CanvasRenderingContext2D,x:number,y:number,color:string,angle:number){c.save();c.translate(x,y);c.rotate(angle);c.globalAlpha=.68;c.fillStyle=color;c.beginPath();c.moveTo(-85,-23);c.lineTo(82,-26);c.lineTo(77,22);c.lineTo(-80,26);c.closePath();c.fill();c.globalAlpha=.2;c.strokeStyle='#fff';for(let z=-70;z<80;z+=12){c.beginPath();c.moveTo(z,-22);c.lineTo(z+22,22);c.stroke();}c.restore();}
- function photo(c:CanvasRenderingContext2D,im:HTMLImageElement,x:number,y:number,w:number,h:number,angle:number,caption:string,color:string){c.save();c.translate(x+w/2,y+h/2);c.rotate(angle);c.shadowColor='#4a403633';c.shadowBlur=18;c.shadowOffsetY=9;c.fillStyle='#fffefa';c.fillRect(-w/2-15,-h/2-15,w+30,h+82);c.shadowColor='transparent';c.fillStyle='#fff';c.fillRect(-w/2,-h/2,w,h);const scale=Math.min(w/im.width,h/im.height);const iw=im.width*scale,ih=im.height*scale;c.drawImage(im,-iw/2,-ih/2,iw,ih);c.fillStyle='#7a7b70';c.font='17px monospace';c.fillText(caption,-w/2+10,h/2+40);tape(c,0,-h/2-12,color,-angle*.4);c.restore();}
  {const {canvas,c}=base(0,'收藏剪贴簿 / VOL. 01');text(c,'把喜欢，',83,233,76);text(c,'贴进纸里。',83,326,76);text(c,'十张画，三段小心情。',88,385,25,'#78867d');photo(c,images[0],125,478,530,540,-.07,'01 — a wish to keep','#a9bcc6');photo(c,images[8],630,695,215,230,.12,'soft blue','#b5cadd');c.save();c.translate(640,1110);c.rotate(-.07);c.fillStyle='#e8ddbd';c.fillRect(0,0,255,65);text(c,'给每一份小小的喜欢',18,41,20);c.restore();text(c,'A SCRAPBOOK OF LITTLE JOYS',88,1215,21,'#78867d');pages.push(canvas.toDataURL('image/jpeg',.9));}
  entries.forEach((e,i)=>{const {canvas,c}=base(i+1,e.chapter);text(c,e.title,75,213,58);text(c,e.tag,78,258,18,'#879084');const landscape=images[i].width/images[i].height>1.25;
  if(landscape){c.fillStyle=e.color+'30';c.fillRect(70,355,860,620);photo(c,images[i],100,410,800,520,i%2?.028:-.025,e.tag,e.color);text(c,'↳ 夹在日记里的一幕',100,1080,24,'#7c8478');}

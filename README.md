@@ -1,3 +1,17 @@
+# 把喜欢，贴进纸里 · 微信图片剪贴簿
+
+在线阅读：https://louisyang841.github.io/weixin-scrapbook/
+
+将 10 张收藏插画编排为 12 页手作剪贴簿，分为生日来信、线条与陪伴、蓝色小心情三章。支持 Three.js 纸张卷曲翻页、目录跳页、方向键控制与平面阅读。
+
+基于 [KeJunMao/mono-flipbook](https://github.com/KeJunMao/mono-flipbook) 改编，保留原项目及素材来源说明。插画权利归各原作者所有；本仓库不为这些图片授予新的许可。
+
+本地使用 `npm ci`、`npm run dev`；生产构建使用 `npm run build`。GitHub Actions 自动部署 `main` 到 GitHub Pages。具体编排见 [SCRAPBOOK.md](SCRAPBOOK.md)。
+
+---
+
+以下为原项目文档，部分工作台操作仅适用于保留的原工作台源码。
+
 # 纸间 · Folio Studio
 
 纯前端图片翻书工作台。沿用 Three.js 纸张卷曲引擎，支持上传图片、定制外观、设置开篇页和分文件 ZIP 导出。

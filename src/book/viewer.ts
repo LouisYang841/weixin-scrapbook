@@ -55,9 +55,13 @@ export function mountViewer(
         options.onPageChange?.(indices);
       },
     };
-    dispose = desktop
-      ? mountDesktop(host, options.pages, settings)
-      : mountMobile(host, options.pages, page, settings);
+    try {
+      dispose = desktop
+        ? mountDesktop(host, options.pages, settings)
+        : mountMobile(host, options.pages, page, settings);
+    } catch (cause) {
+      options.onError?.(cause);
+    }
   }
   const observer = new ResizeObserver(() => {
     const desktop =

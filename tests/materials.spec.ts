@@ -30,18 +30,18 @@ for(const mobile of [false,true]){
   await expect(host).toHaveAttribute('data-magazine-state','ready',{timeout:60000});
   await expect(host).toHaveAttribute('data-magazine-all-pages-ready','true',{timeout:60000});
   await expect(page.locator('#book')).not.toHaveClass(/plain/);
-  await expect(page.locator('.book-frame')).toHaveClass(mobile?/mobile/:/desktop/);
+  await expect(page.locator('.book-frame')).toHaveClass(/desktop/);
   await light(page,-45);
   const left=await page.locator('.folio-scene').screenshot();
   await light(page,5);
   const front=await page.locator('.folio-scene').screenshot();
   // This captures the WebGL canvas: color pages are unchanged while light moves.
-  expect(difference(left,front)).toBeGreaterThan(mobile?300:1500);
+  expect(difference(left,front)).toBeGreaterThan(1500);
   fs.mkdirSync('artifacts/materials',{recursive:true});
   fs.writeFileSync(`artifacts/materials/${mobile?'mobile':'desktop'}-left.png`,left);
   fs.writeFileSync(`artifacts/materials/${mobile?'mobile':'desktop'}-front.png`,front);
   await page.locator('#next').click();
-  await expect(host).toHaveAttribute('data-magazine-visible-pages',mobile?'2,3,4,5':'2,3',{timeout:15000});
+  await expect(host).toHaveAttribute('data-magazine-visible-pages','2,3',{timeout:15000});
   await page.waitForTimeout(1400);
   await light(page,-15);
   await page.locator('.folio-scene').screenshot({path:`artifacts/materials/${mobile?'mobile':'desktop'}-turned.png`});

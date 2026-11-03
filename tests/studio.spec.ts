@@ -275,7 +275,7 @@ test("split ZIP keeps HTML small and runs both offline and on a static host", as
   );
   await reader.screenshot({ path: "artifacts/studio-offline-desktop.png" });
   await reader.setViewportSize({ width: 390, height: 844 });
-  await expect(reader.locator(".book-frame")).toHaveClass(/mobile/);
+  await expect(reader.locator(".book-frame")).toHaveClass(/desktop/);
   await expect(reader.locator(".book-host")).toHaveAttribute(
     "data-magazine-state",
     "ready",
@@ -288,7 +288,7 @@ test("split ZIP keeps HTML small and runs both offline and on a static host", as
   );
   await expect(reader.locator(".book-host")).toHaveAttribute(
     "data-magazine-visible-pages",
-    "3,4",
+    "2,3",
   );
   await reader.keyboard.press("ArrowLeft");
   await expect(reader.locator(".book-host")).toHaveAttribute(
@@ -401,7 +401,7 @@ test("mobile studio fits its screen and switches tools without blocking touch pa
     "data-magazine-state",
     "ready",
   );
-  await expect(page.locator(".book-frame")).toHaveClass(/mobile/);
+  await expect(page.locator(".book-frame")).toHaveClass(/desktop/);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
     390,
   );
@@ -416,7 +416,7 @@ test("mobile studio fits its screen and switches tools without blocking touch pa
   await page.getByRole("button", { name: /第 1 页/ }).click();
   await expect(page.locator(".book-host")).toHaveAttribute(
     "data-magazine-visible-pages",
-    "1,2,3,4",
+    "1,2",
   );
   await page.getByRole("button", { name: "阅读预览" }).click();
   await expect(page.locator(".studio")).toHaveClass(/is-reading/);
@@ -666,14 +666,14 @@ test("opening page follows its image through sorting and falls back after remova
     "2,3",
   );
   await page.getByRole("button", { name: "手机预览" }).click();
-  await expect(page.locator(".book-frame")).toHaveClass(/mobile/);
+  await expect(page.locator(".book-frame")).toHaveClass(/desktop/);
   await expect(page.locator(".book-host")).toHaveAttribute(
     "data-magazine-state",
     "ready",
   );
   await expect(page.locator(".book-host")).toHaveAttribute(
     "data-magazine-visible-pages",
-    "3,4",
+    "2,3",
   );
   await page.getByRole("button", { name: "桌面预览" }).click();
   await expect(page.locator(".book-frame")).toHaveClass(/desktop/);

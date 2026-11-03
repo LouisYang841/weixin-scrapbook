@@ -1,6 +1,5 @@
 import type { SurfaceMap } from './surface-map';
 import { mountDesktop, type BookController } from "./desktop.js";
-import { mountMobile } from "./mobile.js";
 export interface ViewerOptions {
   pages: string[];
   initialPage: number;
@@ -19,7 +18,6 @@ export function mountViewer(
   options: ViewerOptions,
 ): () => void {
   let dispose: (() => void) | undefined;
-  let mode: boolean | undefined;
   let page = options.initialPage;
   const frame = document.createElement("div");
   const host = document.createElement("div");
@@ -28,11 +26,10 @@ export function mountViewer(
   host.setAttribute("role", "group");
   host.setAttribute("aria-label", "可交互翻书预览");
   container.append(frame, host);
-  function mount(desktop: boolean) {
+  function mount() {
     dispose?.();
-    mode = desktop;
-    frame.className = "book-frame " + (desktop ? "desktop" : "mobile");
-    container.dataset.layout = desktop ? "desktop" : "mobile";
+    frame.className = "book-frame desktop";
+    container.dataset.layout = "desktop";
     host.dataset.magazineState = "preparing";
     const settings = {
       initialPage: page,
@@ -55,28 +52,19 @@ export function mountViewer(
           },
         }),
       onPageChange: (indices: number[]) => {
-        if (indices.length && (!desktop || !indices.includes(page)))
+        if (indices.length && !indices.includes(page))
           page = indices[0];
         options.onPageChange?.(indices);
       },
     };
     try {
-      dispose = desktop
-        ? mountDesktop(host, options.pages, settings)
-        : mountMobile(host, options.pages, page, settings);
+      dispose = mountDesktop(host, options.pages, settings);
     } catch (cause) {
       options.onError?.(cause);
     }
   }
-  const observer = new ResizeObserver(() => {
-    const desktop =
-      container.clientWidth >= 620 &&
-      container.clientWidth > container.clientHeight * 0.82;
-    if (desktop !== mode) mount(desktop);
-  });
-  observer.observe(container);
+  mount();
   return () => {
-    observer.disconnect();
     dispose?.();
     frame.remove();
     host.remove();

@@ -85,7 +85,7 @@ test("holding the page continuously turns multiple sheets and stops on release",
     after,
   );
 });
-test("portrait uses the separate mobile renderer and supports forward and backward turns", async ({
+test("portrait uses the desktop renderer and supports forward and backward turns", async ({
   browser,
 }) => {
   const context = await browser.newContext({
@@ -98,10 +98,10 @@ test("portrait uses the separate mobile renderer and supports forward and backwa
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await ready(page);
-  await expect(page.locator(".book-frame")).toHaveClass(/mobile/);
+  await expect(page.locator(".book-frame")).toHaveClass(/desktop/);
   await expect(book(page)).toHaveAttribute(
     "data-magazine-visible-pages",
-    "15,16,17,18",
+    "14,15",
   );
   await page.screenshot({ path: "artifacts/mobile-opening.png" });
   const rect = await book(page).boundingBox();
@@ -112,7 +112,7 @@ test("portrait uses the separate mobile renderer and supports forward and backwa
   );
   await expect(book(page)).toHaveAttribute(
     "data-magazine-visible-pages",
-    "16,17,18,19",
+    "16,17",
   );
   await page.waitForTimeout(1500);
   await page.touchscreen.tap(
@@ -121,7 +121,7 @@ test("portrait uses the separate mobile renderer and supports forward and backwa
   );
   await expect(book(page)).toHaveAttribute(
     "data-magazine-visible-pages",
-    "15,16,17,18",
+    "14,15",
   );
   expect(errors).toEqual([]);
   await context.close();
@@ -131,7 +131,7 @@ test("switching between landscape and portrait keeps a single live canvas", asyn
 }) => {
   await ready(page);
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(page.locator(".book-frame")).toHaveClass(/mobile/);
+  await expect(page.locator(".book-frame")).toHaveClass(/desktop/);
   await expect(book(page)).toHaveAttribute("data-magazine-state", "ready");
   await expect(page.locator("canvas")).toHaveCount(1);
   await page.setViewportSize({ width: 1497, height: 1054 });
@@ -140,7 +140,7 @@ test("switching between landscape and portrait keeps a single live canvas", asyn
   await expect(page.locator("canvas")).toHaveCount(1);
 });
 
-test("reading mode mobile canvas spans the viewport while touch dragging beyond the layout frame", async ({
+test("reading mode portrait uses the desktop renderer for touch dragging", async ({
   browser,
 }) => {
   const context = await browser.newContext({
@@ -152,8 +152,9 @@ test("reading mode mobile canvas spans the viewport while touch dragging beyond 
   const page = await context.newPage();
   await ready(page);
   await page.getByRole("button", { name: "阅读预览" }).click();
+  await expect(page.locator(".book-frame")).toHaveClass(/desktop/);
   const bounds = await page.locator("canvas").boundingBox();
-  expect(bounds).toEqual({ x: 0, y: 0, width: 390, height: 844 });
+  expect(bounds!.width).toBeGreaterThan(390);
   const frame = await page.locator(".book-frame").boundingBox();
   expect(frame!.height).toBeLessThan(bounds!.height);
   const client = await context.newCDPSession(page);
@@ -175,17 +176,18 @@ test("reading mode mobile canvas spans the viewport while touch dragging beyond 
   });
   await expect(book(page)).toHaveAttribute(
     "data-magazine-visible-pages",
-    "16,17,18,19",
+    "16,17",
   );
   await page.getByRole("button", { name: "Reset book" }).tap();
   await expect(book(page)).toHaveAttribute("data-magazine-state", "ready");
   await expect(book(page)).toHaveAttribute(
     "data-magazine-visible-pages",
-    "15,16,17,18",
+    "14,15",
   );
   await page.setViewportSize({ width: 360, height: 640 });
+  await expect(page.locator(".book-frame")).toHaveClass(/desktop/);
   await expect
     .poll(async () => await page.locator("canvas").boundingBox())
-    .toEqual({ x: 0, y: 0, width: 360, height: 640 });
+    .toBeTruthy();
   await context.close();
 });
